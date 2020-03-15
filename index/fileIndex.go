@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"io/ioutil"
 	"os"
+	"path/filepath"
 	"polisgomarchenko/utils"
 	"regexp"
 	"strings"
@@ -20,7 +21,7 @@ func GetInvertedIndexMap(dir string) (map[string][]string, error)  {
 	}
 
 	for _, fileInfo := range inputFiles {
-		currentFile, err := ioutil.ReadFile(dir + "/" + fileInfo.Name())
+		currentFile, err := ioutil.ReadFile(filepath.Join(dir, fileInfo.Name()))
 
 		if err != nil {
 			return nil,err
@@ -51,19 +52,17 @@ func WriteInvertedIndexIntoFile(dir string, outputFileName string) error {
 		return err
 	}
 
+	defer file.Close()
+
 	res, err := json.Marshal(indexMap)
 
 	if err != nil{
 		return err
 	}
 
-	_, err = file.Write(res)
-
-	if err != nil{
+	if _, err = file.Write(res); err != nil {
 		return err
 	}
-
-	_ = file.Close()
 
 	return nil
 }
